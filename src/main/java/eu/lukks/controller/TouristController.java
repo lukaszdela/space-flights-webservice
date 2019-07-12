@@ -98,7 +98,7 @@ public class TouristController {
 		}
 	}
 
-	@GetMapping("delete/flight/{touristId}/{flightId}")
+	@GetMapping("/delete/flight/{touristId}/{flightId}")
 	public void deleteFlightForTourist(@PathVariable("touristId") Long touristId,
 			@PathVariable("flightId") Long flightId) {
 		Tourist tourist = iTouristService.getTouristById(touristId);
