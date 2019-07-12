@@ -3,6 +3,7 @@ package eu.lukks.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import eu.lukks.domain.Flight;
+import eu.lukks.domain.FlightDto;
 import eu.lukks.domain.Tourist;
 import eu.lukks.domain.TouristDto;
 import eu.lukks.service.ICountryService;
@@ -78,10 +80,12 @@ public class TouristController {
 			for (Long id : flightIds) {
 				Flight flight = iFlightService.getFlightById(id);
 				if (flight != null) {
-					Set<Tourist> tourists = flight.getTourists();
-					tourists.add(tourist);
-					flight.setTourists(tourists);
-					iFlightService.saveFlight(flight);
+					if (iTouristService.checkAvalibleSeatForFlight(flight)) {
+						Set<Tourist> tourists = flight.getTourists();
+						tourists.add(tourist);
+						flight.setTourists(tourists);
+						iFlightService.saveFlight(flight);
+					}
 				}
 
 			}
@@ -114,6 +118,15 @@ public class TouristController {
 			flight.getTourists().add(tourist);
 			iFlightService.saveFlight(flight);
 		}
+	}
+	
+	@GetMapping("/list/flight/{id}")
+	public Set<FlightDto> getTouristFlightList(@PathVariable("id")Long id) {
+	Set<Flight> flights = iTouristService.getTouristFlightListByTouristId(id);
+
+			return flights.stream()
+					.map(f -> new FlightDto(f.getId(), f.getOutlet(), f.getArrival(), f.getSeats(), f.getTicketPrice()))
+					.collect(Collectors.toSet());
 	}
 
 	@ExceptionHandler(Exception.class)

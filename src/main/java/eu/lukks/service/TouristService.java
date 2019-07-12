@@ -1,10 +1,12 @@
 package eu.lukks.service;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import eu.lukks.domain.Country;
@@ -21,6 +23,7 @@ public class TouristService implements ITouristService {
 	private CountryRepository countryRepository;
 	private TouristRepository touristRepository;
 	private FlightRepository flightRepository;
+	private Tourist tourist;
 
 	@Autowired
 	public TouristService(CountryRepository countryRepository, TouristRepository touristRepository,
@@ -89,6 +92,16 @@ public class TouristService implements ITouristService {
 			return true;
 		else
 			return false;
+	}
+	
+	@Override
+	public Set<Flight> getTouristFlightListByTouristId(Long id) {
+		Set<Flight> flights = new HashSet<Flight>();
+		Tourist tourist = touristRepository.findById(id).orElse(null);
+		if(tourist != null) {
+			flights.addAll(tourist.getFlights());
+		}
+		return flights;
 	}
 
 }

@@ -1,5 +1,6 @@
 package eu.lukks.service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -42,6 +43,16 @@ public class FlightService implements IFlightService {
 		tourists.removeAll(tourists);
 		flightRepository.save(flight);
 		flightRepository.delete(flight);
+	}
+	
+	@Override
+	public Set<Tourist> getFlightTouristListByFlightId(Long id) {
+		Set<Tourist> tourists = new HashSet<Tourist>();
+		Flight flight = flightRepository.findById(id).orElse(null);
+		if(flight != null) {
+			tourists.addAll(flight.getTourists());
+		}
+		return tourists;
 	}
 
 }

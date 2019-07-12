@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import eu.lukks.domain.Flight;
 import eu.lukks.domain.FlightDto;
 import eu.lukks.domain.Tourist;
+import eu.lukks.domain.TouristDto;
 import eu.lukks.service.IFlightService;
 import eu.lukks.service.ITouristService;
 
@@ -51,8 +52,10 @@ public class FlightController {
 		Set<Tourist> tourists = new HashSet<Tourist>();
 
 		if (touristsIds != null) {
-			for (Long id : touristsIds) {
-				tourists.add(iTouristService.getTouristById(id));
+			if (iTouristService.checkAvalibleSeatForFlight(flight)) {
+				for (Long id : touristsIds) {
+					tourists.add(iTouristService.getTouristById(id));
+				}
 			}
 		}
 		flight.setTourists(tourists);
@@ -86,6 +89,31 @@ public class FlightController {
 			flight.getTourists().add(tourist);
 			iFlightService.saveFlight(flight);
 		}
+	}
+	
+	@GetMapping("/list/tourist/{id}")
+	public Set<TouristDto> getFlightTouristList(@PathVariable("id")Long id) {
+		Set<Tourist> tourists = iFlightService.getFlightTouristListByFlightId(id);
+		Set<TouristDto> touristsDtos = new HashSet<TouristDto>();
+		
+		for (Tourist tourist : tourists) {
+			TouristDto touristDto = new TouristDto();
+			touristDto.setId(tourist.getId());
+			touristDto.setName(tourist.getName());
+			touristDto.setSurname(tourist.getSurname());
+			touristDto.setGender(tourist.getGender().getName());
+			if (tourist.getCountry() != null)
+				touristDto.setCountry(tourist.getCountry().getName());
+			if (tourist.getNotes() != null)
+				touristDto.setNotes(tourist.getNotes());
+			touristDto.setDateBirth(tourist.getDateBirth());
+			if (tourist.getFlights() == null)
+				touristDto.setNumberOfFlights(0);
+			else
+				touristDto.setNumberOfFlights(tourist.getFlights().size());
+			touristsDtos.add(touristDto);
+		}
+		return touristsDtos;
 	}
 
 	@ExceptionHandler(Exception.class)

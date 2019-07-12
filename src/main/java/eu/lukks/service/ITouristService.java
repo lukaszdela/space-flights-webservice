@@ -25,4 +25,6 @@ public interface ITouristService {
 
 	void deleteTouristFromFlight(Tourist tourist, Flight flight);
 
+	Set<Flight> getTouristFlightListByTouristId(Long id);
+
 }
