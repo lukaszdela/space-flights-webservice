@@ -54,7 +54,7 @@ public class FlightController {
 		if(flight.getSeats()>0 && flight.getTicketPrice()>0) {
 		
 		if (touristsIds != null) {
-			if (iTouristService.checkAvalibleSeatForFlight(flight)) {
+			if (touristsIds.size() <= flight.getSeats()) {
 				for (Long id : touristsIds) {
 					tourists.add(iTouristService.getTouristById(id));
 				}
