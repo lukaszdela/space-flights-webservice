@@ -51,6 +51,8 @@ public class FlightController {
 			@RequestParam(value = "tourist", required = false) List<Long> touristsIds) {
 		Set<Tourist> tourists = new HashSet<Tourist>();
 
+		if(flight.getSeats()>0 && flight.getTicketPrice()>0) {
+		
 		if (touristsIds != null) {
 			if (iTouristService.checkAvalibleSeatForFlight(flight)) {
 				for (Long id : touristsIds) {
@@ -60,6 +62,7 @@ public class FlightController {
 		}
 		flight.setTourists(tourists);
 		iFlightService.saveFlight(flight);
+	}
 	}
 
 	@GetMapping("/delete/{id}")
@@ -114,6 +117,19 @@ public class FlightController {
 			touristsDtos.add(touristDto);
 		}
 		return touristsDtos;
+	}
+	
+	@GetMapping("/get/{id}")
+	public FlightDto getFlightDtoById(@PathVariable("id")Long id) {
+		Flight flight = iFlightService.getFlightById(id);
+		FlightDto flightDto = new FlightDto();
+		if(flight != null) {
+			flightDto.setOutlet(flight.getOutlet());
+			flightDto.setArrival(flight.getArrival());
+			flightDto.setSeats(flight.getSeats());
+			flightDto.setTicketPrice(flight.getTicketPrice());
+		}
+		return flightDto;
 	}
 
 	@ExceptionHandler(Exception.class)

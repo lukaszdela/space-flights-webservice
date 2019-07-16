@@ -128,6 +128,21 @@ public class TouristController {
 					.map(f -> new FlightDto(f.getId(), f.getOutlet(), f.getArrival(), f.getSeats(), f.getTicketPrice()))
 					.collect(Collectors.toSet());
 	}
+	
+	@GetMapping("/get/{id}")
+	public TouristDto getTouristById(@PathVariable("id")Long id) {
+		Tourist tourist = iTouristService.getTouristById(id);
+		TouristDto touristDto = new TouristDto();
+		if (tourist != null) {
+			touristDto.setName(tourist.getName());
+			touristDto.setSurname(tourist.getSurname());
+			touristDto.setGender(tourist.getGender().getName());
+			touristDto.setCountry(tourist.getCountry().getName());
+			touristDto.setNotes(tourist.getNotes());
+			touristDto.setDateBirth(tourist.getDateBirth());
+			}
+		return touristDto;
+	}
 
 	@ExceptionHandler(Exception.class)
 	public void handleException(final Exception e) {
